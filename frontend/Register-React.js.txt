@@ -1,0 +1,82 @@
+import { Button } from '@mui/material';
+import axios from 'axios';
+import React, { useState } from 'react';
+
+export const User = () => {
+  const [fn, setFn] = useState('');
+  const [ln, setLn] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [status, setStatus] = useState(true);
+  const [statusVisiblity, setStatusVisibility] = useState(false);
+
+  const handleSubmit = async () => {
+    if (fn === '') return alert('Please fill First Name !');
+    if (ln === '') return alert('Please fill Last Name !');
+    if (email === '') return alert('Please fill email !');
+    if (password === '') return alert('Please fill password !');
+
+    // email validation
+    if (
+      !email.match(
+        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+      )
+    )
+      return alert('Please add a correct email !');
+
+    //   creating user
+
+    const response = await axios.post('http://localhost:5050/user/register', {
+      firstName: fn,
+      lastName: ln,
+      email,
+      password,
+    });
+
+    if (response?.data?.status === -1) {
+      setStatusVisibility(true);
+      return setStatus(false);
+    }
+
+    setStatusVisibility(true);
+    return setStatus(true);
+  };
+
+  return (
+    <div>
+      <h1>registration from</h1>
+
+      <input type="text" value={fn} onChange={(e) => setFn(e.target.value)} placeholder="First Name" />
+      <br />
+      <input type="text" value={ln} onChange={(e) => setLn(e.target.value)} placeholder="Last Name" />
+      <br />
+      <input type="emil" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" />
+      <br />
+      <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" />
+      <br />
+
+      <br />
+      <Button onClick={handleSubmit} variant="contained">
+        Register
+      </Button>
+
+      <br />
+
+      <div
+        style={{
+          width: '500px',
+          height: '60px',
+          background: status ? 'green' : 'red',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: '#fff',
+          marginTop: '30px',
+          //   visibility: statusVisiblity ? 'visible' : 'hidden',
+        }}
+      >
+        {status ? 'User created successfully' : 'Failed to create user'}
+      </div>
+    </div>
+  );
+};
